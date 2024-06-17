@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 
+		* root-context.xml 
+		어플리케이션 구동과 동시에 web.xml 문서를 거쳐서 바로 로딩되는 문서.
+		- 어플리케이션 시작과 동시에 설정해야하는 내용들을 작성 
+		  ex) db연결, 트랜잭션 제어 설정
+		
+	 -->
+	 
+	 <!-- DB 연결 설정 3단계 -->
+	 <!-- 1단계 DB 연결을 위한 도구 설정 
+	 	  BasicDataSource dataSource = new BasicDataSource();
+	 	  dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	 -->
+	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="realDataSource" destroy-method="close">
+		<!-- property: setter 함수를 호출하고 있음 -->
+	 	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+	 	<property name="username" value="C##SPRING"/>
+	 	<property name="password" value="SPRING"/>
+	 </bean>
+	 
+	 <!-- mybatis가 DB로 전달하는 중간의 쿼리문을 가로채서 보여주기 위한 빈 객체 -->
+	 <bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="realDataSource">
+			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+				<property name="loggingType" value="MULTI_LINE"></property>
+			</bean>
+			
+		</constructor-arg>
+		
+	 </bean>
+	 
+	 <!-- 2) Mybatis Spring에서 제공하는 sql 명령어 실행을 위한 도구 등록(SqlSessionFactory 생성)
+	 	 SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+	 	 sqlSessionFactory.setConfigLocation("classpath:mybatis-config.xml");
+	 	 sqlSessionFactory.setDataSource(dataSource);
+	  -->
+	 <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+	 	<property name="configLocation" value="classpath:mybatis-config.xml"/> <!-- 설정정보의 위치 : src/main/resources 폴더에서 만듬  -->
+	 	
+	 	<!-- 연결을 위한 도구로 생성한 bean객체의 id제시 -->
+	 	<property name="dataSource" ref="dataSource"/> <!-- 위에 등록한 bean 참조 -->
+	 	
+	 	<!-- 매퍼 등록 : 앞으로 생성할 모든 mapper파일을 한번에 읽어올 수 있음 -->
+	 	<property name="mapperLocations" value="classpath:mapper/**/*.xml"/>
+	 	<!-- ** : mapper 아래 모든 하위디렉토리에 존재하는 xml을 읽어올 수 있음 -->
+	 	
+	 </bean>
+	 
+	 <!--
+	 	3) SQL 구문을 위한 템플릿을 제공하는 도구 등록
+	 	SqlSessionTemplate sqlSession = new SqlSessionTemplate(sqlSessionFactory);
+	 	 
+	 -->
+     <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession" >
+     	<!-- sqlSession 얻어내기 위한 도구 설정 -->
+     	<constructor-arg ref="sqlSessionFactory"/> <!-- 생성자에 들어갈 인자들  -->
+	 </bean>
+	 
+	 
+	 <!-- 
+	 	property : setter 방식으로 값을 주입
+	 	ex) name = "url" -> setUrl(value값)
+	 	
+	 	constructor-arg : 생성자 방식으로 값을 주입
+	 	ex) new Bean객체(value/ref값)
+	 	
+	  -->
+	  
+	  
+	 
+	 
+	
+</beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  
+  <settings>
+  	<setting name="jdbcTypeForNull" value="NULL"/>
+  	<setting name="mapUnderscoreToCamelCase" value="true"/> <!-- DB의 언더바를 카멜케이스로 바꿔줌  -->
+  	
+  </settings>
+  
+  <!-- 클래스들의 별칭부여 -->
+  <typeAliases>
+  	
+  	<!-- com.kh.spring.member.model.vo.Member -> member
+  		 com.kh.spring.member.model.service.MemberService -> memberService
+  	 -->
+  	 
+  	<package name="com.kh.spring"/>
+  </typeAliases>
+  
+</configuration>

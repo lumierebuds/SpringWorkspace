@@ -1,0 +1,11 @@
+package com.kh.spring.common.exception;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+
+@ControllerAdvice
+public class ExceptionController {
+
+	public String exceptionHandler(Exception e, Model model) {
+		e.printStackTrace();
+	}
+}

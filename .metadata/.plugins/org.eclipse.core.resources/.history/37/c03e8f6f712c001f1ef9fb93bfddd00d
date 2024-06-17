@@ -1,0 +1,16 @@
+package com.kh.spring.common.exception;
+
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+
+@ControllerAdvice
+public class ExceptionController {
+
+	public String exceptionHandler(Exception e, Model model) {
+		e.printStackTrace();
+		model.addAttribute("errorMsg", "서비스 이용중 문제가 발생했습니다. 관리자에게 문의해주세요");
+		
+		return "common/errorPage";
+
+	}
+}

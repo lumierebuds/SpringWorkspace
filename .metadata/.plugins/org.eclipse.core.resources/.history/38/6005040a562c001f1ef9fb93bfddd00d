@@ -1,0 +1,24 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+	
+	<jsp:include page="/WEB-INF/views/common/header.jsp"/>
+		
+	<div class="content">
+		<div class="content-1">
+			<h3>회원 정보 조회</h3>
+			
+			<p>아이디를 입력 받아 일치하는 회원 정보를 출력
+			</p>
+		</div>
+	</div>
+	
+	<%@ include file="/WEB-INF/views/common/footer.jsp" %>
+</body>
+</html>

@@ -68,7 +68,6 @@
      	<constructor-arg ref="sqlSessionFactory"/> <!-- 생성자에 들어갈 인자들  -->
 	 </bean>
 	 
-	 
 	 <!-- 
 	 	property : setter 방식으로 값을 주입
 	 	ex) name = "url" -> setUrl(value값)
