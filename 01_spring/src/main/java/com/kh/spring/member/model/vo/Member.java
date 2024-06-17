@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @NoArgsConstructor // 롬복이 매개변수 없는 생성자 만들어줄것
 @AllArgsConstructor // 롬복이 매개변수 있는 생성자를 만들어줌
 @Getter // 롬복이 getter 함수만듬

@@ -1,12 +1,23 @@
 package com.kh.spring.member.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.spring.member.model.service.MemberService;
@@ -156,11 +167,206 @@ public class MemberController {
 			model.addAttribute("errorMsg", "로그인 실패!"); // SessionAttributes와 일치하는 값이 없으므로 request이관
 			viewName = "common/errorPage";
 		} else {
+			ra.addFlashAttribute("alertMsg", "로그인 성공"); // (수정)
 			model.addAttribute("loginUser", loginUser); // session scope로 이관
 			viewName = "redirect:/"; // 현재 어플리케이션 경로 "/spring"으로 리다이렉트 - 애플리케이션 경로에 해당
 		}
 
 		return viewName;
 	}
+	
+	
+	@GetMapping("/insert") // "/spring/member/insert"
+	public String enrollForm() {
+
+		return "member/memberEnrollForm"; // 회원가입 페이지로 이동
+
+	}
+
+	@PostMapping("/insert")
+	public String insertMember(
+			Member m, // 사용자가 입력한 값들이 담겨있는 Member 객체
+			RedirectAttributes ra, // 세션스코프에 데이터를 담아놨다 리다이렉트후 리퀘스트 스코프에 이관시킴
+			Model model // 포워딩할 응답뷰페이지로 전달하고자 하는 데이터를 맵형식으로 담아줌.
+			) {
+		
+		// 회원가입 요청 업무로직 
+		// 암호화 작업
+		
+		/*
+		 * 1) spring-security관련 의존성 추가(web, core, config)
+		 * 2) 인코딩클래스 bean 객체로 등록
+		 * 3) web.xml에 생성한 xml파일을 로딩할 수 있도록 추가 
+		 */
+
+		String encPwd = encoder.encode(m.getUserPwd());
+		m.setUserPwd(encPwd); // 암호화된 pwd로 변경
+
+		int result = mService.insertMember(m);
+		// 응답메시지반환
+		
+		String url = "";
+		if (result > 0) {
+			// 처음 데이터를 담을때는 sessionScope에 데이터를 저장
+			// redirect가 완료된 후 sessionScope에 저장된 데이터를 requestScope로 이관
+			ra.addFlashAttribute("alertMsg", "회원가입 성공"); // 플래시 메시지?
+			url = "redirect:/";
+		} else {
+			model.addAttribute("errorMsg", "회원가입 실패");
+			url = "common/errorPage";
+		}
+
+		return url;
+	}
+	
+	@GetMapping("/myPage")
+	public String myPage() {
+		return "member/myPage";
+	}
+	
+	@PostMapping("/update")
+	public String updateMember(
+			Member m,
+			Model model,
+			RedirectAttributes ra,
+			HttpSession session
+			) {
+		
+		int result = mService.updateMember(m);
+		String url = "";
+
+		if (result > 0) {
+			// 업데이트 성공
+			// db에 저장된 수정된 회원정보를 다시 불러와서 저장. -> 로그인메서드 재호출
+			Member loginUser = mService.login(m);
+			model.addAttribute("loginUser", loginUser);
+			ra.addAttribute("alertMsg", "내정보수정 성공");
+			url = "redirect:/member/myPage";
+
+		} else {
+			model.addAttribute("errorMsg", "내정보수정 실패");
+			url = "common/errorPage";
+		}
+		return url;
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session, SessionStatus status) {
+
+		// session.removeAttribute("loginUser");
+		// session.invalidate();
+		status.setComplete(); // @SessionAttributes태그를 통해 model에서 session으로 이관된 데이터는
+		// SessionStatus를 통해 비워줘야한다.(스프링 프레임워크가 관리하는 객체)
+		// session.setAttribute로 등록했다면 "removeAttribute, invalidate" 로 비워줄 수 있음
+
+		return "redirect:/";
+
+	}
+
+	@GetMapping("/idCheck")
+	@ResponseBody // 비동기요청시 필요한 어노테이션 - "직렬화된 response body" 를 반환받을 수 있다.
+	public String idCheck(String userId) {
+
+		int result = mService.idCheck(userId); // 아이디가 존재한다면 1, 없다면 0
+
+		/*
+		 * 컨트롤러에서 반환되는 값은 항상 forward하고자 하는 응답페이지 혹은 redirect를 위한 경로로 해석을 한다.
+		 * 
+		 * 그게 아니라 "값 자체" 를 반환시키기 위해서는 @ResponseBody 어노테이션이 필요함.
+		 */
+		return result + ""; // "/WEB-INF/views/1.jsp" 가 반환되게 될것이다.
+
+	}
+
+//	@PostMapping("/selectOne")
+//	@ResponseBody
+//	public /* String */ HashMap<String, Object> selectOne(Member m) {
+//
+//		Member m2 = mService.login(m); // 로그인 기능을 활용해서 회원을 조회
+//		HashMap<String, Object> map = new HashMap<>();
+//		
+//		if (m2 != null) {
+//			map.put("userId", m2.getUserId());
+//			map.put("userPwd", m2.getUserPwd());
+//			// return "{\"userId\":\" " + m2.getUserId() + "\"}";
+//		} else {
+//			// return "{}";
+//		}
+//		// HashMap -> JSON 자동 형변환(jackson-databind)
+//		System.out.println(map);
+//		return map;
+//	}
+
+	/*
+	 * jsonView 빈을 통한 데이터 처리
+	 */
+	// @PostMapping("/selectOne")
+	// public String selectOne(Member m, Model model) {
+	//
+	// Member m2 = mService.login(m); // 로그인 기능을 활용해서 회원을 조회
+	// HashMap<String, Object> map = new HashMap<>();
+	//
+	// if (m2 != null) {
+	// map.put("userId", m2.getUserId());
+	// map.put("userPwd", m2.getUserPwd());
+	// // return "{\"userId\":\" " + m2.getUserId() + "\"}";
+	// }
+	// model.addAttribute("userInfo", map);
+	//
+	// return "jsonView"; // view객체의 이름
+	// }
+
+	@PostMapping("/selectOne")
+	public ResponseEntity<Map<String, Object>> selectOne(Member m) {
+
+		// try {
+		// throw new RuntimeException();
+		// } catch (Exception e) {
+		// System.out.println("1. try-catch블럭에서 예외처리.");
+		//
+		// e.printStackTrace();
+		// if (true)
+		// throw new RuntimeException();
+		// }
+
+		Member loginUser = mService.login(m);
+
+		HashMap<String, Object> userInfo = new HashMap<>();
+		
+		ResponseEntity<Map<String, Object>> res = null;
+
+		if (loginUser == null) { // 정보가 없을땐? 
+			res = ResponseEntity.notFound().build(); // 조회한 회원이 없을때 객체 생성후 반환
+		} else {
+			userInfo.put("userId", loginUser.getUserId());
+			userInfo.put("userName", loginUser.getUserName());
+			
+			// "application/json; charset=utf-8"
+			res = ResponseEntity
+					.ok() // 응답상태 200
+					// response.setContentType("application/json; charset=utf-8"); .. 서블릿 방식
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE) // 응답헤더내용 : Json 데이터라 반환하도록
+					.body(userInfo); // 응답바디내용
+		}
+
+		return res;
+	}
+	
+	
+	/*
+	 * 스프링 예외처리 방법 
+	 * 1. try~catch / throws 메서드별로 예외처리가 가능하며 항상 1순위로 예외처리를 함. 
+	 * 2. 하나의 컨트롤러에서 발생하는 예외를 모아서 처리하는 방법 -> @ExceptionHandler 어노테이션 추가 2순위로 작동함.
+	 * 3. 어플리케이션 전역에서 발생하는 예외를 모아서 처리하는 방법 --> @ControllerAdvice 어노테이션으로 추가 3순위로 작동
+	 */
+	
+	// @ExceptionHandler
+	// public String exceptionalHandler(Exception e, Model model) {
+	// e.printStackTrace();
+	//
+	// model.addAttribute("errorMsg", "서비스 이용중 문제가 발생했습니다.");
+	//
+	// return "common/errorPage";
+	// }
 
 }

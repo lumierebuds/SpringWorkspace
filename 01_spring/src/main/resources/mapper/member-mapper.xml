@@ -10,4 +10,39 @@
 		WHERE USER_ID = #{userId}
 			AND STATUS = 'Y'
 	</select>
+	
+	<insert id="insertMember">
+		INSERT INTO MEMBER VALUES(
+			SEQ_UNO.NEXTVAL,
+			#{userId},
+			#{userPwd},
+			#{userName},
+			#{email},
+			#{birthday},
+			#{gender},
+			#{phone},
+			#{address},
+			DEFAULT,
+			DEFAULT,
+			DEFAULT,
+			DEFAULT	
+		)
+	</insert>
+	
+	<update id="updateMember">
+		UPDATE MEMBER 
+		SET EMAIL = #{email},
+			BIRTHDAY = #{birthday},
+			GENDER = #{gender},
+			PHONE = #{phone},
+			USER_NAME = #{userName},
+			MODIFY_DATE = SYSDATE
+		WHERE USER_ID = #{userId} AND STATUS = 'Y'
+	</update>
+	
+	<select id="idCheck" resultType="int">
+		SELECT COUNT(*)
+		FROM MEMBER
+		WHERE USER_ID = #{userId}
+	</select>
 </mapper>

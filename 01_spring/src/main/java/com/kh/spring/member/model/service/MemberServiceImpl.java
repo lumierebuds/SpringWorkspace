@@ -7,7 +7,7 @@ import com.kh.spring.member.model.dao.MemberDao;
 import com.kh.spring.member.model.vo.Member;
 
 @Service
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
 	@Autowired
 	private MemberDao dao;
@@ -21,6 +21,23 @@ public class MemberServiceImpl implements MemberService{
 		// SqlSession에 대한 관리를 "스프링 컨테이너가 주관" 하므로 직접 생성하지 않아도 된다.
 
 		return dao.login(m);
+	}
+
+	@Override
+	public int insertMember(Member m) {
+		
+		return dao.insertMember(m);
+	}
+
+	@Override
+	public int updateMember(Member m) {
+		return dao.updateMember(m);
+	}
+
+	@Override
+	public int idCheck(String userId) {
+
+		return dao.idCheck(userId);
 	}
 
 }

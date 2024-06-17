@@ -17,12 +17,28 @@
 	 	  BasicDataSource dataSource = new BasicDataSource();
 	 	  dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
 	 -->
-	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="realDataSource" destroy-method="close">
 		<!-- property: setter 함수를 호출하고 있음 -->
 	 	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
 	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
 	 	<property name="username" value="C##SPRING"/>
 	 	<property name="password" value="SPRING"/>
+	 </bean>
+	 
+	 <!-- mybatis가 DB로 전달하는 중간의 쿼리문을 가로채서 보여주기 위한 빈 객체 -->
+	
+	 <!-- 
+	 	Log4jdbcProxyDataSource dataSource = new Log4jdbcProxyDataSource(realDataSource);
+	 	dataSource.setLogFormatter(new Log4JdbcCustomFormatter());
+	  -->
+	 <bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg  ref="realDataSource" />
+		<property name="logFormatter">
+			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+				<property name="loggingType" value="MULTI_LINE"/>
+				<property name="sqlPrefix" value="[SQL]"/>
+			</bean>		
+		</property>
 	 </bean>
 	 
 	 <!-- 2) Mybatis Spring에서 제공하는 sql 명령어 실행을 위한 도구 등록(SqlSessionFactory 생성)

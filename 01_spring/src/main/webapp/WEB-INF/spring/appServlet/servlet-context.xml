@@ -40,6 +40,22 @@
 	
 	<context:component-scan base-package="com.kh.spring" />
 	
+	<!-- ============= 기본 세팅 =====================  -->
+	 
+	<!-- 비동기 요청처리를 위한 jsonView bean객체 등록 -->
+	<beans:bean id="jsonView" class="net.sf.json.spring.web.servlet.view.JsonView">
+		<beans:property name="contentType" value="application/json; charset=utf-8"></beans:property>
+	</beans:bean>
+	
+	<beans:bean id="viewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<!--
+			처리순서는 1순위로 처리되도록 하고, 올바른 bean 객체를 찾지못한경우 
+			기본 ViewResolver가 작동하게끔 처리
+		  -->
+		<beans:property name="order" value="1"></beans:property>
+	</beans:bean>
+	
+	
 	
 	
 </beans:beans>

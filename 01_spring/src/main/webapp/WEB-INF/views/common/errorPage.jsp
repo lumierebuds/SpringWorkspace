@@ -7,7 +7,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>${errorMsg}</h1>
-
+	<jsp:include page="/WEB-INF/views/common/header.jsp"/>
+		
+	<div class="content">
+		<h1>${errorMsg}</h1>
+	</div>
+	
+	<%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
 </html>

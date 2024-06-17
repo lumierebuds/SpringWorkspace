@@ -18,4 +18,20 @@ public class MemberDaoImpl implements MemberDao{
 		return sqlSession.selectOne("member.login", m);
 	}
 
+	@Override
+	public int insertMember(Member m) {
+		return sqlSession.insert("member.insertMember", m);
+	}
+
+	@Override
+	public int updateMember(Member m) {
+		return sqlSession.update("member.updateMember", m);
+	}
+
+	@Override
+	public int idCheck(String userId) {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("member.idCheck", userId);
+	}
+
 }
