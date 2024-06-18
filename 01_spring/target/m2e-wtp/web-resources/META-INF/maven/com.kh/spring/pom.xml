@@ -243,7 +243,25 @@
 	         <artifactId>log4jdbc-remix</artifactId>
 	         <version>0.2.7</version>
       	</dependency>
-	    							        		
+	    
+	    <!-- 파일 업로드와 관련된 의존성 -->
+		<!-- 1) commons-fileupload -->
+		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+	    <dependency>
+	         <groupId>commons-fileupload</groupId>
+	         <artifactId>commons-fileupload</artifactId>
+	         <version>1.4</version>
+	    </dependency>
+	    
+	    <!-- 2) commons-io -->
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>
+		
+				    				        				
 	</dependencies>
 	
     <build>

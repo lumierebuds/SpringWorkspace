@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	<select id="selectBoardTypeList" resultMap="boardTypeMap">
+		SELECT *
+		FROM BOARD_TYPE
+		ORDER BY BOARD_CD
+	</select>
+	
+	<resultMap id="boardTypeMap" type="boardType" >
+		<id column="board_cd" property="boardCode"/>
+		<result column="board_name" property="boardName"/>
+	</resultMap>
+	
+	<!-- rownum 방식 조회 -->
+	<!-- 	<select id="selectList" resultType="board"> 
+	      SELECT * 
+	      FROM (SELECT B.* , ROWNUM RNUM
+	            FROM (
+	               SELECT
+	                    BOARD_NO,
+	                    BOARD_TITLE,
+	                    USER_NAME AS BOARD_WRITER,
+	                    COUNT,
+	                    CREATE_DATE
+	                FROM BOARD B
+	                LEFT JOIN MEMBER M ON BOARD_WRITER = USER_NO
+	                WHERE B.STATUS = 'Y'
+	                ORDER BY BOARD_NO DESC
+	             ) B
+	            ) C
+	      WHERE RNUM <![CDATA[ >= ]]> #{startRow} AND RNUM <![CDATA[ <= ]]> #{endRow}
+	</select> -->
+	
+	<!-- rowBounds 방식 조회 -->
+	<select id="selectList" resultType="board"> 
+	      SELECT
+	          BOARD_NO,
+	          BOARD_TITLE,
+	          USER_NAME AS BOARD_WRITER,
+	          COUNT,
+	          CREATE_DATE
+	      FROM BOARD B
+	      LEFT JOIN MEMBER M ON BOARD_WRITER = USER_NO
+	      WHERE B.STATUS = 'Y'
+	      ORDER BY BOARD_NO DESC
+	</select>
+	<!--
+		전체 데이터를 전부 조회한 이후에, resultSet의 cursor의 위치를 
+		내가 지정한 offset으로 이동시킴, 내가 지정한 limit까지 반복하면서 
+		값을 가져온다.
+	  -->
+	
+	<select id="selectListCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM BOARD B
+		LEFT JOIN MEMBER M ON BOARD_WRITER = USER_NO 
+		WHERE B.STATUS = 'Y'
+	</select>
+	<!-- 조인을 해준 이유 : 나중에 "작성자" 이름으로 검색하는 것에 대비하기 위함  -->
+	
+	
+</mapper>

@@ -119,7 +119,7 @@
             <li><a href="${contextPath }/chat/chatRoomList">채팅</a></li>
             
             <c:forEach items='${boardTypeList}' var='boardType'>
-               <li><a href="${contextPath }/board/list/${boardType.boardCd}">${boardType.boardName}</a></li>
+               <li><a href="${contextPath }/board/list/${boardType.boardCode}">${boardType.boardName}</a></li>
             </c:forEach>
          </ul>
       </div>   
