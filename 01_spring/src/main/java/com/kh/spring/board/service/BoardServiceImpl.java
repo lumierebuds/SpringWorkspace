@@ -16,9 +16,11 @@ import com.kh.spring.common.Utils;
 import com.kh.spring.common.model.vo.PageInfo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardServiceImpl implements BoardService {
 
 	private final BoardDao boardDao;
@@ -81,10 +83,10 @@ public class BoardServiceImpl implements BoardService {
 
 	@Transactional(rollbackFor = { Exception.class })
 	@Override
-	public int updateBoard(Board board, MultipartFile upfile, int boardImgNo) throws RuntimeException {
+	public int updateBoard(Board board, MultipartFile upfile, int boardImgNo, String deleteList)
+			throws RuntimeException {
 		// upfile에 전달된 값이 있으면 이미지 테이블 수정, 추가
 
-		
 
 		// 원래 사진이 없었고, 추가된 것도 없는 경우 -> 아무것도 안함.
 
@@ -100,13 +102,14 @@ public class BoardServiceImpl implements BoardService {
 		}
 		
 		BoardImg bi = new BoardImg();
+		String webPath = "/resources/images/board/N/";
+		String serverFolderPath = application.getRealPath(webPath);
+
 		// 사진이 없던곳에서 새롭게 추가된 경우 -> INSERT
-		if (boardImgNo == 0 && upfile != null && !upfile.getOriginalFilename().equals("")) {
+		if (boardImgNo == 0 && upfile != null && !upfile.isEmpty()) {
 			bi.setRefBno(board.getBoardNo());
 			bi.setImgLevel(0);
 			
-			String webPath = "/resources/images/board/N/";
-			String serverFolderPath = application.getRealPath(webPath);
 			
 			String changeName = Utils.saveFile(upfile, serverFolderPath);
 			bi.setChangeName(changeName);
@@ -115,11 +118,8 @@ public class BoardServiceImpl implements BoardService {
 			result *= boardDao.insertBoardImg(bi);
 		} 
 		// 사진이 있던곳에서 새롭게 추가된 경우 -> UPDATE
-		else if (boardImgNo != 0 && upfile != null && !upfile.getOriginalFilename().equals("")) {
+		else if (boardImgNo != 0 && upfile != null && !upfile.isEmpty()) {
 			bi.setBoardImgNo(boardImgNo);
-
-			String webPath = "/resources/images/board/N/";
-			String serverFolderPath = application.getRealPath(webPath);
 
 			String changeName = Utils.saveFile(upfile, serverFolderPath);
 			bi.setChangeName(changeName);
@@ -128,8 +128,10 @@ public class BoardServiceImpl implements BoardService {
 			result *= boardDao.updateBoardImg(bi);
 		}
 		// 사진이 있던곳에서 삭제가 된경우 -> DELETE
-		else if (boardImgNo != 0 && upfile != null && upfile.getOriginalFilename().equals("")) {
-			// -- 내일 수정하기(2024.06.20.목)
+		else if (boardImgNo != 0 && upfile.isEmpty() && !deleteList.equals("")) {
+			System.out.println(deleteList);
+			log.debug("boardImgNo {}, upfile {}", boardImgNo, upfile);
+			result *= boardDao.deleteBoardImg(deleteList);
 		}
 		
 		return result;

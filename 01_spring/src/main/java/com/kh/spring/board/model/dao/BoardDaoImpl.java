@@ -106,4 +106,10 @@ public class BoardDaoImpl implements BoardDao {
 		return sqlSession.update("board.updateBoard", board);
 	}
 
+	@Override
+	public int deleteBoardImg(String deleteList) {
+
+		return sqlSession.delete("board.deleteBoardImg", deleteList);
+	}
+
 }

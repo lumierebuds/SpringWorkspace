@@ -3,7 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
@@ -72,6 +74,27 @@
 	</interceptors>
 	
 	<!-- ====================== 인터셉터 등록 영역 끝 ============================== -->
+	
+	<!-- ====================== 웹소캣 등록 영역 ============================== -->
+	<!-- <bean id='chatWebsocket' class="com.kh.spring..."/> -->
+	<!-- 웹소캣으로 연결요청, 메시지전송등의 기능을 수행할 클래스 chatWebsocket -->
+	<websocket:handlers>
+		<!-- 웹소캣으로 연결 요청주소를 처리할 bean 객체 -->
+		<websocket:mapping handler="chatWebsocket" path="/chat"/>
+		
+		<websocket:handshake-interceptors>
+			<!-- 
+				http통신에서 request와 response 가로챈 후
+				httpSession의 정보를 WebSocketSession에 넣어주는 객체
+			 -->
+			<beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+		</websocket:handshake-interceptors>
+		
+		<!-- sockjs 라이브러리를 통해 만들어진 웹소켓 객체임을 의미한다. -->
+		<websocket:sockjs></websocket:sockjs>
+	</websocket:handlers>
+		
+	<!-- ====================== 웹소캣 등록 영역 끝 ============================== -->
 	
 	
 </beans:beans>

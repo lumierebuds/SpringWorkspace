@@ -261,6 +261,13 @@
 		    <version>2.11.0</version>
 		</dependency>
 		
+		<!-- Spring WebSocket -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+	    <dependency>
+	         <groupId>org.springframework</groupId>
+	         <artifactId>spring-websocket</artifactId>
+	         <version>${org.springframework-version}</version>
+	    </dependency>
 				    				        				
 	</dependencies>
 	

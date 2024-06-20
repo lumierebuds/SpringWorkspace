@@ -111,14 +111,14 @@ public class BoardController {
 					Model model,
 					RedirectAttributes ra, // alertMsg
 					// 첨부파일
-					@RequestParam(value="upfile", required=false) MultipartFile upfile // 항상 첨부파일이 없을 수 있으니, "required=false"
+					@RequestParam(value="upfile", required=false) MultipartFile upfile // 항상 첨부파일이 없을 수 있으니, "required=false" // 항상 객체 생성
 	) {
 		
 		// 업무로직
 		
 		// 1) 웹서버에 클라이언트가 전달한 FILE 저장
 		BoardImg bi = null; 
-		if (upfile != null && !upfile.getOriginalFilename().equals("")) {
+		if (upfile != null && !upfile.isEmpty()) {
 			// upfile 객체가 null이 아니고, 전달된 파일명이 빈문자열이 아닐때
 			// 첨부파일, 이미지등을 저장할 저장경로를 얻어오기. - 보통은 어플리케이션 컨텍스트의 값으로 하지만 지금은 "문자열로 설정"
 			String webPath = "/resources/images/board/" + boardCode + "/"; // 게시판 "유형별"로 이미지 저장 (N, P)
@@ -261,11 +261,11 @@ public class BoardController {
 		
 		if (!(board.getAttachment() != null && board.getAttachment().getChangeName() != null)) { // 게시글에서 "첨부파일이 없고 파일명이
 																									// 없을때"
-			return ResponseEntity.notFound().build(); // 찾고자 하는 값이 없다면 "404"에러를 응답값으로 사용 
+			return ResponseEntity.notFound().build(); // 찾고자 하는 값이 없다면 "404" 에러를 응답값으로 사용
 		}
 		
 
-		// Resource 객체로 파일 얻어오기 
+		// Resource 객체로 파일 얻어오기 (비동기로 데이터를 얻어오는것)
 		String saveDir = application.getRealPath("/resources/images/board/" + board.getBoardCd() + "/"); // 저장된 주소
 		File downFile = new File(saveDir, board.getAttachment().getChangeName());
 		Resource resource = resourceLoader.getResource("file:" + downFile); // 파일 프로토콜로 "저장함"
@@ -305,36 +305,38 @@ public class BoardController {
 		return "board/boardUpdateForm";
 	}
 	
-	// 게시글 수정 요청처리
-	@PostMapping("/update/{boardCode}/{boardNo}")
-	public String updateBoard2(
-			@PathVariable("boardCode") String boardCode,
-			@PathVariable("boardNo") int boardNo,
-			Model model,
-			Board board, // 저장할 게시판 데이터
-			RedirectAttributes ra,
-			// 첨부파일
-			@RequestParam(value = "upfile", required = false) MultipartFile upfile, int boardImgNo) {
-
-		// 업무로직
-
-		// BOARD테이블 수정하고
-		log.debug("board ? {} boardImgNo ? {}", board, boardImgNo); // {} 안에 내용이 순서대로 치환된다.
-
-		int result = 0;
-
-		result = boardService.updateBoard(board, upfile, boardImgNo);
-
-		if (result > 0) {
-			ra.addFlashAttribute("alertMsg", "게시글 수정 성공");
-			// 작업 성공시 리다이렉트
-			return "redirect:/board/detail/" + boardCode + "/" + boardNo;
-		} else {
-			model.addAttribute("errorMsg", "게시글 수정 실패");
-			return "common/errorPage";
+		// 게시글 수정 요청처리
+		@PostMapping("/update/{boardCode}/{boardNo}")
+		public String updateBoard2(
+				@PathVariable("boardCode") String boardCode,
+				@PathVariable("boardNo") int boardNo,
+				Model model,
+				Board board, // 저장할 게시판 데이터
+				RedirectAttributes ra,
+				// 첨부파일
+				@RequestParam(value = "upfile", required = false) MultipartFile upfile, 
+				int boardImgNo, 
+				String deleteList) {
+	
+			// 업무로직
+	
+			// BOARD테이블 수정하고
+			log.debug("board ? {} boardImgNo ? {}", board, boardImgNo); // {} 안에 내용이 순서대로 치환된다.
+	
+			int result = 0;
+	
+			result = boardService.updateBoard(board, upfile, boardImgNo, deleteList);
+	
+			if (result > 0) {
+				ra.addFlashAttribute("alertMsg", "게시글 수정 성공");
+				// 작업 성공시 리다이렉트
+				return "redirect:/board/detail/" + boardCode + "/" + boardNo;
+			} else {
+				model.addAttribute("errorMsg", "게시글 수정 실패");
+				return "common/errorPage";
+			}
+	
 		}
-
-	}
 	
 	
 }

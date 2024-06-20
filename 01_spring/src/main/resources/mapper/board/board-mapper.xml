@@ -202,7 +202,8 @@
 	<update id="updateBoard" parameterType="board">
 		UPDATE BOARD
 		SET BOARD_TITLE = #{boardTitle},
-			BOARD_CONTENT = #{boardContent}
+			BOARD_CONTENT = #{boardContent},
+			CREATE_DATE = SYSDATE
 		WHERE BOARD_NO = #{boardNo}
 	</update>
 	
@@ -213,5 +214,12 @@
 			CHANGE_NAME = #{changeName}
 		WHERE BOARD_IMG_NO = #{boardImgNo}
 	</update>
+	
+	<!-- 게시글 수정시 이미지 삭제 -->
+	<delete id="deleteBoardImg">
+		DELETE FROM BOARD_IMG
+		WHERE BOARD_IMG_NO IN (#{deleteList})
+	</delete>
+	
 	
 </mapper>

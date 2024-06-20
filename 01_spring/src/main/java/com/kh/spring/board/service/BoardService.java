@@ -21,6 +21,6 @@ public interface BoardService {
 
 	int increaseCount(int boardNo);
 
-	int updateBoard(Board board, MultipartFile upfile, int boardImgNo);
+	int updateBoard(Board board, MultipartFile upfile, int boardImgNo, String deleteList);
 
 }
