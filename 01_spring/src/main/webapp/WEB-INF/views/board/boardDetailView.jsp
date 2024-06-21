@@ -113,6 +113,107 @@
          </table>
       </div>
    </div>
+   <script>
+   		// 댓글 목록 조회
+   		function selectReplyList(){
+   			$.ajax({
+   				url : '${contextPath}/reply/selectReplyList',
+   				data : {
+   				boardNo:`${boardNo}`// requestScope에 그대로 존재하는 값을 보냄
+   				},
+   				success : function(result){
+   					console.log(result);
+   					
+   					var replys = "";
+   					for(var reply of result){
+   						replys  += "<tr>";
+   						replys +=`<td>\${reply.userName}</td>`;
+   						replys += `<td>\${reply.replyContent}</td>`;
+   						replys += `<td>\${reply.createDate}
+   									<button onclick='showReplyUpdateForm(\${reply.replyNo}, this)'>수정</button>
+   									<button onclick=''>삭제</button>
+   									</td>`;
+						replys+="</tr>";   									
+   					}
+   					
+   					$("#replyArea tbody").html(replys);
+   					$("#rcount").html(result.length);
+   				},
+   				error : function(xhr){
+   					console.log(xhr);
+   				}
+   			})
+   		}
+   		
+   		// 댓글 작성하기 
+   		function insertReply(){
+   			$.ajax({
+   				url : `${contextPath}/reply/insertReply`,
+   				type: "post",
+   				data: {
+   					refBno : `${boardNo}`,
+   					replyWriter : `${loginUser.userNo}`,
+   					replyContent : $("#replyContent").val()
+   				}, 
+   				success : function(result){
+   					if(result == 0) alert("댓글 등록 실패");
+   					else alert("댓글등록 성공");
+   					selectReplyList();
+   					$("#replyContent").val();
+   				}, 
+   				error : function(xhr){
+   					
+   				}
+   				
+   			})
+   		}
+   		
+   		// 댓글 수정하기 폼으로 변경 
+   		function showReplyUpdateForm(replyNo, btn){
+   			var $textArea = $("<textarea></textarea>");
+   			var $button = $("<button></button>").text("수정");
+   			
+   			var $td = $(btn).parent().parent().children().eq(1); //td
+   			
+   			$textArea.text($td.text()); // 댓글 내용 복사
+   			
+   			$td.html(""); // 기존 댓글내용 제거 
+   			$td.append($textArea).append($button);
+   			
+   			$button.click(function(){
+   				updateReply(replyNo, $textArea);
+   			})
+   		}
+   		
+   		
+   		// 댓글 수정하기 
+   		function updateReply(replyNo, $textArea){
+   			$.ajax({
+   				url: `${contextPath}/reply/update`,
+   				data :{
+   					replyNo, 
+   					replyContent: $textArea.val()
+   				},
+   				type : 'post',
+   				success : function(result) {
+   					if(result > 0){
+   						alert("댓글수정성공");
+   					} else{
+   						alert("댓글수정실패");
+   					}
+   					selectReplyList();
+   				}, 
+   				error : function(xhr){
+   					console.log(xhr);
+   				}
+   				
+   			})
+   		}
+   		
+   		
+   		selectReplyList(); // 페이지 들어오자마자 호출 
+   		
+   </script>
    
    <jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
 

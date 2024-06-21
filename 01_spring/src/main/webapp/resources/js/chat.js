@@ -1,3 +1,8 @@
+(function () {
+  const displayChatting = document.querySelector(".display-chatting");
+  displayChatting.scrollTop = displayChatting.scrollHeight;
+})();
+
 // 1) 메시지 전송기능
 
 document.querySelector("#send").addEventListener("click", function () {
@@ -46,7 +51,7 @@ chattingSocket.onmessage = function (e) {
 
   var span = document.createElement("span");
   span.classList.add("chatDate");
-  span.innerText = "2024-01-01";
+  span.innerText = currentTime();
 
   // 내가쓴글인지 아닌지 체크
   if (userNo == chatMessage.userNo) {
@@ -66,3 +71,14 @@ chattingSocket.onmessage = function (e) {
   // scrollHeight : 스크롤되는 요소의 전체 크기
   displayChatting.scrollTop = displayChatting.scrollHeight;
 };
+
+function currentTime() {
+  var now = new Date();
+  return`${now.getFullYear()} - ${now.getMonth() + 1 < 10 ? "0" + (now.getMonth() + 1) : now.getMonth() + 1} - ${now.getDate()}`; // 2024-06-11
+}
+
+
+var exitBtn = document.querySelector("#exit-btn");
+exitBtn.onclick = function () {
+  location.href = `${contextPath}/chat/chatRoom/${chatRoomNo}/exit`;
+}

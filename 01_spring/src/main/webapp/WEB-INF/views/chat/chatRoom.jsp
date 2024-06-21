@@ -111,7 +111,9 @@
   		const contextPath = `${contextPath}`;
   		
   		// 웹소캣객체 생성 --> 연결요청보냄
-  		var chattingSocket = new SockJS(contextPath+"/chat"); // 	
+  		var chattingSocket = new SockJS(contextPath+"/chat"); 
+  		// ex) "http://192.168.30.193:8080"+contextPath+"/chat/" 
+  		// ip 주소로 경로를 주게 된다면 다른 사람들과 통신이 가능하다. 
    
    </script>
    

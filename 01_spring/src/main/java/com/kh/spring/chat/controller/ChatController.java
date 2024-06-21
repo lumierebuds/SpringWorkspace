@@ -90,5 +90,26 @@ public class ChatController {
 		}
 
 	}
-	
+
+	@GetMapping("/chatRoom/{chatRoomNo}/exit")
+	public String exitChatRoom(@PathVariable("chatRoomNo") int chatRoomNo, 
+			@ModelAttribute("loginUser") Member loginUser,
+			ChatRoomJoin join, // ChatRoomJoin 객체에 PathVariable로 정의된 변수도 매핑된다.
+			RedirectAttributes ra
+			) {
+		// 업무로직
+		// 1) chatRoomNo로 DELETE 실행 - (ChatRoomJoin)
+		join.setUserNo(loginUser.getUserNo()); // 로그인된 사용자의 번호를 설정(매개변수에서 정의안됨)
+		int result = chatService.exitChatRoom(join);
+		
+		// 2) 현재 채팅방에 참여하고있는 인원정보 확인 SELECT
+		// 3) 내가 마지막 인원이라면 채팅방 정보를 DELETE - (ChatRoom)
+		
+		// 응답 화면 
+		// chatRoomList로 redirect 
+		ra.addFlashAttribute("alertMsg", "채팅방을 나갔습니다.");
+		return "redirect:/chat/chatRoomList";
+		
+		
+	}
 }

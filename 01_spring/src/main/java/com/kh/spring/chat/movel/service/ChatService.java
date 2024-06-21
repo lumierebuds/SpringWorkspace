@@ -3,6 +3,7 @@ package com.kh.spring.chat.movel.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.spring.chat.movel.dao.ChatDao;
 import com.kh.spring.chat.movel.vo.ChatMessage;
@@ -57,6 +58,28 @@ public class ChatService {
 		chatMessage.setMessage(Utils.newLineHandler(chatMessage.getMessage()));
 
 		return chatDao.insertMessage(chatMessage);
+	}
+
+	@Transactional(rollbackFor = { Exception.class })
+	public int exitChatRoom(ChatRoomJoin join) {
+		// 업무로직
+
+		// 1) chatRoomNo로 DELETE 실행 - (ChatRoomJoin)
+		int result = chatDao.exitChatRoom(join);
+		if (result == 0) {
+			return 0;
+		}
+
+		// 2) 현재 채팅방에 참여하고있는 인원정보 확인 SELECT
+		int cnt = chatDao.countChatRoomMember(join.getChatRoomNo());
+
+		// 3) 내가 마지막 인원이라면 채팅방 정보를 DELETE - (ChatRoom)
+		if (cnt == 0) {
+			result = chatDao.closeChatRoom(join.getChatRoomNo());
+		}
+
+		return result;
+
 	}
 
 }

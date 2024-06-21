@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reply">
+	<select id="selectReplyList" resultType="reply">
+		SELECT 
+			REPLY_NO,
+			REPLY_CONTENT,
+			USER_NAME,
+			REPLY_WRITER,
+			CREATE_DATE,
+			REPLY.STATUS
+		FROM REPLY
+		JOIN MEMBER ON REPLY_WRITER = USER_NO
+		WHERE REF_BNO = #{boardNo}
+			AND REPLY.STATUS = 'Y'
+		
+	</select>
+	
+	<insert id="insertReply">
+		INSERT INTO REPLY
+		VALUES
+		(
+			SEQ_RNO.NEXTVAL,
+			#{replyContent},
+			#{refBno},
+			#{replyWriter},
+			DEFAULT,
+			DEFAULT
+		)
+	</insert>
+	
+	<update id="updateReply">
+		UPDATE REPLY 
+		SET REPLY_CONTENT = #{replyContent},
+		CREATE_DATE = SYSDATE
+		WHERE REPLY_NO = #{replyNo}
+	</update>
+	
+	<delete id="deleteReply" parameterType="int">
+		DELETE FROM REPLY
+		WHERE 
+		REPLY_NO = #{replyNo}
+	</delete>
+</mapper>

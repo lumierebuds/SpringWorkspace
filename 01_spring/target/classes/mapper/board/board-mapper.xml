@@ -166,6 +166,11 @@
 			<result column="CHANGE_NAME" property="changeName"/>
 			<result column="IMG_LEVEL" property="imgLevel"/>
 		</association>
+		
+		<!-- 리스트로 댓글 정보를 모두 조회하기 -->
+		<collection property="replyList">
+			
+		</collection>
 	</resultMap>
 	
 	

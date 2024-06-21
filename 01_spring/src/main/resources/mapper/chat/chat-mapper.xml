@@ -69,4 +69,28 @@
 		)
 	</insert>
 	
+	<!-- 현재 참여하고 있는 채팅방에서 나가기(인원수 1감소 할것)-->
+	<delete id="exitChatRoom">
+		
+		DELETE FROM CHAT_ROOM_JOIN
+		WHERE CHAT_ROOM_NO = #{chatRoomNo}
+			AND USER_NO = #{userNo} 
+	
+	</delete>
+	
+	<!-- 현재 채팅방에 참여하고 있는 사람수-->
+	<select id="countChatRoomMember" resultType="int">
+		SELECT COUNT(*)
+		FROM CHAT_ROOM_JOIN
+		WHERE CHAT_ROOM_NO = #{chatRoomNo}
+		
+	</select>
+	
+	<!-- 채팅방의 상태 바꾸기(Y -> N) -->
+	<update id="closeChatRoom">
+		UPDATE CHAT_ROOM 
+		SET STATUS = 'N' 
+		WHERE CHAT_ROOM_NO = #{chatRoomNo}
+	</update>
+	
 </mapper>
