@@ -162,7 +162,7 @@
 
         
         <!-- /khsm이라는 경로로 이동하면 /kh로 이동  -->
-      <Context docBase="01_spring" path="/spring" reloadable="true" source="org.eclipse.jst.jee.server:01_spring"/></Host>
+      <Context docBase="01_spring" path="/spring" reloadable="true" source="org.eclipse.jst.jee.server:01_spring"/><Context docBase="SPRING_STUDY_PROJECT" path="/study" reloadable="true" source="org.eclipse.jst.jee.server:SPRING_STUDY_PROJECT"/></Host>
     </Engine>
   </Service>
 </Server>

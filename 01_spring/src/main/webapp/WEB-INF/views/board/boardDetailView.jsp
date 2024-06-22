@@ -103,11 +103,21 @@
                   </th>
                </tr>
                <tr>
-                  <td colspan="3">댓글(<span id="rcount">0</span>)</td>
+                  <td colspan="3">댓글(<span id="rcount">${empty board.replyList ? "0" : board.replyList.size()}</span>)</td>
                </tr>
             </thead>
             <tbody>
-               
+               <c:forEach items="${board.replyList}" var="reply">
+               		<tr>
+               			<td>${reply.userName}</td>
+               			<td>${reply.replyContent }</td>
+               			<td>${reply.createDate }
+               				<button onclick="showReplyUpdateForm(${reply.replyNo}, this)">수정</button>
+               				<button onclick="update">삭제</button>
+               			</td>
+               		</tr>
+               		
+               </c:forEach>
             
             </tbody>
          </table>
@@ -211,7 +221,7 @@
    		}
    		
    		
-   		selectReplyList(); // 페이지 들어오자마자 호출 
+   		// selectReplyList(); // 페이지 들어오자마자 호출 -- "수정" 
    		
    </script>
    

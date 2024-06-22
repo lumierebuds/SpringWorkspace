@@ -71,7 +71,25 @@
 			<mapping path="/**"/>
 			<beans:bean class="com.kh.spring.common.interceptor.BoardTypeInterceptor"/>
 		</interceptor>
+			
+		<!-- 사용자 정보를 로깅 -->
+		<interceptor>
+			<mapping path="/**/"/>
+			<beans:bean class="com.kh.spring.common.interceptor.LoggingInterceptor"/>
+		</interceptor>
+		
+		<!-- 로그인 체크여부 인터셉터  -->
+		<interceptor>
+			<mapping path="/board/**"/> <!-- 게시판 서비스를 모두 이용하기 위해서는 "로그인 필요" -->
+			<mapping path="/chat/**"/><!-- 채팅 서비스를 모두 이용하기 위해서는 "로그인 필요" -->
+			
+			<exclude-mapping path="/board/list/**"/> <!-- 게시판 서비스중 목록을 보는 경로는 인터셉터 적용 X -->
+
+			<beans:bean class="com.kh.spring.common.interceptor.LoginInterceptor"/>
+		</interceptor>
 	</interceptors>
+	
+	
 	
 	<!-- ====================== 인터셉터 등록 영역 끝 ============================== -->
 	

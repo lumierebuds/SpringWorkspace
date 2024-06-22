@@ -134,7 +134,7 @@ public class MemberController {
 
 	@PostMapping("/login") // 보통 @RequestMapping은 공통 경로를쓸때 PostMapping (Post는 JDBC의 애노테이션)
 	public String login(Member m, Model model, // 응답데이터를 담아줄 객체(로그인한 회원정보, 로그인성공/실패 메세지)
-			RedirectAttributes ra) {
+			RedirectAttributes ra, HttpSession session) {
 
 		// 암호화전 로그인 요청처리 작업
 		// 업무로직
@@ -169,7 +169,13 @@ public class MemberController {
 		} else {
 			ra.addFlashAttribute("alertMsg", "로그인 성공"); // (수정)
 			model.addAttribute("loginUser", loginUser); // session scope로 이관
-			viewName = "redirect:/"; // 현재 어플리케이션 경로 "/spring"으로 리다이렉트 - 애플리케이션 경로에 해당
+
+			String nextUrl = (String) session.getAttribute("nextUrl");
+
+
+			viewName = "redirect:" + (nextUrl != null ? nextUrl : "/"); // 3항 연산자로 리다이렉트 경로 지정
+			session.removeAttribute("nextUrl");
+			// 현재 어플리케이션 경로 "/spring"으로 리다이렉트 - 애플리케이션 경로에 해당
 		}
 
 		return viewName;

@@ -144,6 +144,7 @@
 		)
 	</insert>
 	
+	<!-- <collection> 추가한것  -->
 	<!-- resultMap으로 boardExtMap 안의 attachment 필드의 값을 초기화 시켜주기 -->
 	<!-- 나머지 필드들도 파싱-->
 	<resultMap type="boardExt" id="boardExtMap">
@@ -167,9 +168,21 @@
 			<result column="IMG_LEVEL" property="imgLevel"/>
 		</association>
 		
+		<!-- 
+			collection property = 매핑시킬 필드명 
+					javaType = 반환시킬 자바의 자료형
+					ofType = 제네릭타입
+		 -->
+		
 		<!-- 리스트로 댓글 정보를 모두 조회하기 -->
-		<collection property="replyList">
-			
+		<collection property="replyList" javaType="List"
+		ofType="reply"> 
+			<id column="REPLY_NO" property="replyNo" />
+			<result column="REPLY_CONTENT" property="replyContent"/>
+			<result column="REPLY_CREATE_DATE" property="createDate"/>
+			<result column="REF_BNO" property="refBno"/>
+			<result column="REPLY_WRITER" property="replyWriter"/>
+			<result column="REPLY_USER_NAME" property="userName"/>
 		</collection>
 	</resultMap>
 	
@@ -178,8 +191,8 @@
 		SELECT
 			BOARD_NO,
 			BOARD_TITLE, 
-			USER_NAME, 
-			CREATE_DATE,
+			M.USER_NAME, 
+			B.CREATE_DATE,
 			COUNT,
 			BOARD_CONTENT,
 			BOARD_CD,
@@ -187,12 +200,87 @@
 			BOARD_IMG_NO,
 			ORIGIN_NAME, 
 			CHANGE_NAME,
-			IMG_LEVEL <!-- BOARD_IMG_NO ~ IMG_LEVEL 컬럼값을 BoardExt 클래스 안의 attachment 필드에 객체로 추가 -->
+			IMG_LEVEL, 
+            
+            REPLY_NO,
+            REPLY_CONTENT,
+            R.CREATE_DATE AS REPLY_CREATE_DATE,
+            R.REF_BNO,
+            REPLY_WRITER,
+            M2.USER_NAME AS REPLY_USER_NAME
 		FROM BOARD B 
-		LEFT JOIN MEMBER M ON (BOARD_WRITER = USER_NO)
-		LEFT JOIN BOARD_IMG BI ON (BOARD_NO = REF_BNO)
+		LEFT JOIN MEMBER M ON (BOARD_WRITER = M.USER_NO)
+		LEFT JOIN BOARD_IMG BI ON (BOARD_NO = BI.REF_BNO)
+		LEFT JOIN REPLY R ON (R.REF_BNO = BOARD_NO)
+        LEFT JOIN MEMBER M2 ON (REPLY_WRITER = M2.USER_NO) <!-- M2 조인한 이유. 댓글 작성자의 "이름"을 조회하기 위함 -->
 		WHERE B.STATUS = 'Y' AND BOARD_NO = #{boardNo}
 	</select>
+	
+	
+	<!-- <collection> 사용? -->
+	
+	<resultMap type="boardExt" id="boardExtMap2">
+		<id column="BOARD_NO" property="boardNo"/>
+		<result column="BOARD_TITLE" property="boardTitle"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		<result column="COUNT" property="count"/>
+		<result column="BOARD_CONTENT" property="boardContent"/>
+		<result column="BOARD_CD" property="boardCd"/>
+		
+
+		<association property="attachment">
+			<id column="BOARD_IMG_NO" property="boardImgNo"/>
+			<result column="ORIGIN_NAME" property="originName"/>
+			<result column="CHANGE_NAME" property="changeName"/>
+			<result column="IMG_LEVEL" property="imgLevel"/>
+		</association>
+		
+		<collection property="replyList" javaType="List" ofType="reply" 
+			select="selectReplyList" column="BOARD_NO"> 
+			<!-- 추가적으로 select 태그의 쿼리문을 수행한다.  -->
+		</collection>
+	</resultMap>
+	
+	<!-- 댓글목록을 불러오는 쿼리문(reply-mapper에서 가져옴) -->
+	<!-- 별도의 select 태그 -->
+	<select id="selectReplyList" resultType="reply">
+		SELECT 
+			REPLY_NO,
+			REPLY_CONTENT,
+			USER_NAME,
+			REPLY_WRITER,
+			CREATE_DATE,
+			REPLY.STATUS
+		FROM REPLY
+		JOIN MEMBER ON REPLY_WRITER = USER_NO
+		WHERE REF_BNO = #{boardNo}
+			AND REPLY.STATUS = 'Y'
+	</select>
+	
+	<select id="selectBoard2" resultMap="boardExtMap2">
+		SELECT
+			BOARD_NO,
+			BOARD_TITLE, 
+			M.USER_NAME, 
+			B.CREATE_DATE,
+			COUNT,
+			BOARD_CONTENT,
+			BOARD_CD,
+			
+			BOARD_IMG_NO,
+			ORIGIN_NAME, 
+			CHANGE_NAME,
+			IMG_LEVEL
+		FROM BOARD B 
+		LEFT JOIN MEMBER M ON (BOARD_WRITER = M.USER_NO)
+		LEFT JOIN BOARD_IMG BI ON (BOARD_NO = BI.REF_BNO)
+		WHERE B.STATUS = 'Y' AND BOARD_NO = #{boardNo}
+	</select>
+	
+	
+	
+	
 	
 	
 	<!-- 게시글 조회수 증가 -->
