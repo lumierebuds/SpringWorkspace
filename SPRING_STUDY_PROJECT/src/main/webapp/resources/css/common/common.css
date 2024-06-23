@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+.profile{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit:contain;
+}
+    
+:root {
+	--color-blue: #2c5ae9;
+    --color-blue2: #2750dc;
+    --color-blue3: #1443d9;
+}
+.bg-blue{
+    background: var(--color-blue3);	
+}
+
+

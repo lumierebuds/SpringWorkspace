@@ -119,6 +119,7 @@ public class BoardController {
 		// 1) 웹서버에 클라이언트가 전달한 FILE 저장
 		BoardImg bi = null; 
 		if (upfile != null && !upfile.isEmpty()) {
+			System.out.println("업로드 " + upfile.getOriginalFilename());
 			// upfile 객체가 null이 아니고, 전달된 파일명이 빈문자열이 아닐때
 			// 첨부파일, 이미지등을 저장할 저장경로를 얻어오기. - 보통은 어플리케이션 컨텍스트의 값으로 하지만 지금은 "문자열로 설정"
 			String webPath = "/resources/images/board/" + boardCode + "/"; // 게시판 "유형별"로 이미지 저장 (N, P)

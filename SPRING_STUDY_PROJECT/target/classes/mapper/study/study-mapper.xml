@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="study">
+	<select id="selectList" resultType="board">
+		SELECT
+			NO, 
+			TITLE, 
+			SUB_TITLE,
+			CONTENT,
+			TO_CHAR(SYSDATE) AS CREATE_DATE 
+		FROM BOARD
+	</select>
+	
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard" useGeneratedKeys="true">
+		
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT SEQ_BOARD_NO.NEXTVAL FROM DUAL
+		</selectKey>
+	
+		INSERT 
+		INTO BOARD
+		(
+			NO, 
+			TITLE, 
+			SUB_TITLE,
+			CONTENT,
+			CREATE_DATE
+		) 
+		VALUES
+		(
+			#{no},
+			#{title},
+			#{subTitle},
+			#{content},
+			DEFAULT
+		)
+		
+	</insert>
+	
+	<!-- 게시글의 이미지 등록 -->
+	<insert id="insertBoardImg">
+		INSERT 
+		INTO BOARD_IMG
+		(
+			BOARD_IMG_NO,
+			UPLOAD_PATH,
+			ORIGIN_NAME,
+			CHANGE_NAME,
+			REF_NO
+		)
+		VALUES 
+		(
+			SEQ_BOARD_IMG_NO.NEXTVAL,
+			#{uploadPath},
+			#{originName},
+			#{changeName},
+			#{refNo}
+		)
+		
+	</insert>
+	
+		
+	<resultMap type="boardExt" id="boardExtMap">
+		<id column="NO" property="no"/>
+		<result column="TITLE" property="title"/>
+		<result column="SUB_TITLE" property="subTitle"/>
+		<result column="CONTENT" property="content"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		
+		<collection property="boardImgList" javaType="List"
+		ofType="boardImg">
+			<id column="BOARD_IMG_NO" property="boardImgNo"/>
+			<result column="CHANGE_NAME" property="changeName"/>
+			<result column="ORIGIN_NAME" property="originName"/>
+		</collection>	
+	</resultMap>
+	
+	<!-- 게시글 상세정보 보기  -->
+	<select id="selectBoard" resultMap="boardExtMap">
+		SELECT 
+			NO, 
+			TITLE,
+			SUB_TITLE,
+			CONTENT,
+			TO_CHAR(CREATE_DATE) AS CREATE_DATE,
+			
+			BOARD_IMG_NO,
+			CHANGE_NAME,
+			ORIGIN_NAME
+		FROM BOARD
+		LEFT JOIN BOARD_IMG ON (NO = REF_NO)
+		WHERE NO = ${no}
+	</select>
+	
+</mapper>
