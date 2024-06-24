@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.kh.spring.board.model.service.BoardService;
 import com.kh.spring.board.model.vo.Board;
 import com.kh.spring.board.model.vo.BoardExt;
 import com.kh.spring.board.model.vo.BoardImg;
-import com.kh.spring.board.service.BoardService;
 import com.kh.spring.common.Utils;
 import com.kh.spring.common.model.vo.PageInfo;
 import com.kh.spring.common.template.Pagenation;

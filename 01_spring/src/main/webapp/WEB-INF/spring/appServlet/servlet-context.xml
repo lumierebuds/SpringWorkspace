@@ -4,10 +4,12 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
 		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
@@ -113,6 +115,44 @@
 	</websocket:handlers>
 		
 	<!-- ====================== 웹소캣 등록 영역 끝 ============================== -->
+
+	
+	<!-- ====================== AOP 시작 ============================== -->
+	
+	<aop:aspectj-autoproxy proxy-target-class="false">
+	
+	<!-- proxy : 대리자(대신처리해주는 객체) => service, dao가 하는 일을 대신 해줌. 
+		서비스 혹은 dao에서 인터페이스를 구현하지 않으면 프록시가 대신해주지 못함.
+		
+	 -->
+	 
+	 <!-- 
+	 	proxy-target-class : 프록시 객체를 생성할때 interface 구현객체 혹은 class를 상속받은 객체로 생성할지 결정하는 구문
+	 	
+	 	기본값 : true ==> 프록시 객체 생성시 class로 생성(타겟객체의 메서드를 모두 오버라이딩한 객체)
+	 			 false ==> 인터페이스로 생성함
+	 			 
+	 	aop : 내가만든 공통코드를 모듈로 관리하고자 할때 메서드 단위로 적용시켜야할 코드가 있는 경우 interceptor로
+	 		 관리하지 못하는 경우 사용한다. 
+	 		 
+	    interceptor : 디스패쳐서블릿이 컨트롤러의 메소드를 호출하기 전/후로 나누어서 실행하기 때문에 controller
+	    에게 전달하기 전의 request, response의 데이터를 처리하기에 좋다.
+	    
+	    
+	    스프링의 요청 / 응답 흐름
+	    요청 -> Filter -> DispatcherServlet -> Interceptor -> Controller -> AOP -> Service -> DAO
+	    																					  DB
+	    응답 <- Filter <- DispatcherServlet <- Interceptor <- Controller <- AOP <- Service <- DAO
+	    
+	  -->
+	
+	
+	</aop:aspectj-autoproxy>
+		
+		
+	<!-- ====================== AOP 끝 ============================== -->
+	
+	
 	
 	
 </beans:beans>

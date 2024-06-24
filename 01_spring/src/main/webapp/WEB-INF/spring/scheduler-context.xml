@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- 
+		Spring Scheduler?
+		- 매일, 매분, 매초, 매달, 매주... 반복적으로 실행해야하는 작업이 있는 경우 스프링 스케줄러를 사용하면
+		  간단하게 세팅 가능하다.
+	 -->
+	 <!-- 
+	 	스케줄링 관련 어노테이션 활성화
+	 	@Scheduled..
+	  -->
+	 <task:annotation-driven/>
+	 
+	<context:component-scan base-package="com.kh.spring.common.scheduling"/>
+	<context:component-scan base-package="com.kh.spring.board.model"/>
+		
+	<task:scheduler id="khScheduler" pool-size="10"/>
+	
+	<task:scheduled-tasks scheduler="khScheduler">
+		
+		<task:scheduled ref="scheduleController" method="testCron" cron="1 * * * * *"/>
+		<!-- 
+			ref : bean 객체의 변수명(bean graph를 통해 확인)
+			method : ref에서 지정한 bean 클래스의 "스케줄 대상 메서드"
+			cron :
+			  * * * * * * 
+              초 분 시 일 월 요일 
+              * : 모든 값(매시 매분 매주 매초)
+              ? : 어떤 값이든 상관없다.
+              - : 범위지정(1-2)1에서2초
+              , : 여러값을지정. (1,5)1초랑 5초
+              / : 증분값. 0/2 -> 0초부터 매 2초마다 . (증가치설정가능)
+              L : 지정할수 있는 범위의 마지막값 (매달 말일)
+              W : 가장 가까운 "평일"을 설정할때
+              # : N번째 특정 요일을 설정할때 
+		 -->
+		
+	</task:scheduled-tasks>		
+				
+</beans>

@@ -112,4 +112,10 @@ public class BoardDaoImpl implements BoardDao {
 		return sqlSession.delete("board.deleteBoardImg", deleteList);
 	}
 
+	@Override
+	public List<String> selectFileList() {
+
+		return sqlSession.selectList("board.selectFileList");
+	}
+
 }

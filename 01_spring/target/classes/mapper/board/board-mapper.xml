@@ -314,5 +314,11 @@
 		WHERE BOARD_IMG_NO IN (#{deleteList})
 	</delete>
 	
-	
+	<!-- 게시글의 이미지 이름을 조회 -->
+	<select id="selectFileList" resultType="string">
+		SELECT
+		    '/resources/images/board/' || BOARD_CD || '/' || CHANGE_NAME
+		FROM BOARD_IMG
+		JOIN BOARD ON BOARD_NO = REF_BNO
+	</select>
 </mapper>

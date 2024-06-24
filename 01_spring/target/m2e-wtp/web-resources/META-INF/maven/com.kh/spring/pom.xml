@@ -49,12 +49,7 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 				
-		<!-- AspectJ -->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>${org.aspectj-version}</version>
-		</dependency>	
+	
 		
 		<!-- Logging -->
 		<dependency>
@@ -268,7 +263,22 @@
 	         <artifactId>spring-websocket</artifactId>
 	         <version>${org.springframework-version}</version>
 	    </dependency>
-				    				        				
+		
+	
+		<!-- AOP 관련 의존성 -->
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
+	
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+	    <dependency>
+	          <groupId>org.aspectj</groupId>
+	          <artifactId>aspectjweaver</artifactId>
+	          <version>${org.aspectj-version}</version>
+	    </dependency>				    				        				
 	</dependencies>
 	
     <build>
